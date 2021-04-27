@@ -1,0 +1,55 @@
+<!DOCTYPE>
+<!-- [ドラッグ可能なポップアップウインドウを作ろう &#45; jQuery入門 &#45; ポンクソフト](https://ponk.jp/jquery/basic/ipop) -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery&#45;1.12.4.min.js" integrity="sha256&#45;ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script> -->
+
+<!-- <script src="https://code.jquery.com/jquery&#45;3.6.0.min.js" integrity="sha256&#45;/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> -->
+
+<script type="text/javascript" src="./ipop.js"></script>
+<title>ポップアップウインドのウテスト</title>
+<script>
+$(function() {
+  $('#open').click(function() {$.ipop();});
+});
+</script>
+<style>
+#ipop {
+  padding: 0;
+  background-color: #fed;
+  border: 1px solid #aaa;
+
+  /* この５行は必須 */
+  width: 300px;
+  height: 200px;
+  position: absolute;
+  display: none;
+  z-index: 9999;
+}
+
+#ipop_title {
+  background-color: #fdc;
+  cursor: move;
+}
+
+#ipop_close {
+  cursor: pointer;
+  float: right;
+}
+</style>
+</head>
+<body>
+<a href="javascript:void(0)" id="open">開く</a>
+<p>jQuery1.12, 3.6で動作確認</p>
+
+<div id="ipop">
+  <div id="ipop_close">×</div>
+  <div id="ipop_title">タイトル</div>
+  コンテンツ<br>
+  コンテンツ
+</div>
+
+</body>
+</html>

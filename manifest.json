@@ -1,0 +1,26 @@
+﻿{
+  "name": "Quote Info",
+  "version": "1.3.1",
+  "manifest_version": 3,
+  "description": "Display Quote Infomation on Ticker",
+  "action": {
+    "default_icon": "./icon/icon_48.png",
+    "default_title": "Quote Info",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "tabs", "storage", "contextMenus", "scripting"
+  ], 
+  "background": {
+    "___persistent": true,
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+  "*://*/*",
+  "file:///*/*"
+  ],
+  "icons": {
+    "48": "./icon/icon_48.png",
+    "128": "./icon/icon_128.png"
+  }
+}
