@@ -1,6 +1,6 @@
 // var, letのscope
 function foo(){
-  str = 1
+  str = 1 // propagable variable
   bar()
 }
 

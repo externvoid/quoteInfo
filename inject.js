@@ -50,17 +50,18 @@ function has4digit(str){
 function hasCode(str){
   let ticker = str.match(/[1-9]\d{3}/)[0]
   for(const e of code){ if( ticker == e.code){ 
-    // comment = e.feature
     comment = e.name + "<br>" + e.categoly + "<br>" + e.feature
     return true } }
   return false
 }
 
 function makeHover(det) {
-  det.setAttribute('class', 'btn')
-  det.setAttribute('style', 'color: pink;')
+  // for popup btn
+  det.setAttribute('class', 'popup__btn')
+  det.setAttribute('style', 'color: pink; position: relative; z-index: 1;')
+  // making popup area
   let div = document.createElement('div')
-  div.setAttribute('class', 'popup_box')
+  div.setAttribute('class', 'popup__box')
   div.setAttribute('style', 'color: black;')
 
   let p = document.createElement('p')
