@@ -56,9 +56,9 @@ function traverse(nodes){
 function addHover(node){
   let str = node.innerText
   if(has4digit(str) && hasCode(str)){
-  // if(/[1-9]\d{3}/.test(str) && hasCode(str)){
   // node.parentElement.insertBefore(makeHover(node), node.nextSibling)
-    node.appendChild(makeHover(node))
+  //  node.appendChild(makeHover(node))
+  alterIntoHoverHTML(node); // node.innerHTML
   }
 }
 
@@ -72,6 +72,32 @@ function hasCode(str){
     comment = e.name + "<br>" + e.categoly + "<br>" + e.feature
     return true } }
   return false
+}
+
+function alterIntoHoverHTML(det){
+  let str = det.innerText
+  let matches = str.match(/[1-9]\d{3,}/)
+  let res = find4Digit(matches)
+  for(e in res) {
+    altStr = `<span><span>${res[e]}</span><span>`
+    str = str.replace(res[e], altStr)
+  }
+  det.innerHTML = str
+  let nodes = det.childNodes
+  for(let i=0; i<nodes.length; i++){
+  // for popup btn
+    nodes[i].setAttribute('class', 'popup__btn')
+    nodes[i].setAttribute('style', `color: pink; position: relative;
+                                    z-index: ${cnt};`)
+  // making popup area
+    nodes[i].firstChild.setAttribute('class', 'popup__box')
+    nodes[i].firstChild.setAttribute('style', 'color: black;')
+    cnt = cnt - 1
+  }
+}
+
+function find4Digit(matches){
+  return  matches.filter(e => e.length == 4)
 }
 
 function makeHover(det) {
