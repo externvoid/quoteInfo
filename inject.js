@@ -6,7 +6,8 @@ chrome.storage.local.get(['Code'], foo)
 function foo(e){
   code = e.Code;  // propagable function variable code
   cnt = 9999
-  comment = null
+  // comment = null
+  targetNodes = []
   if (code == null){
     code = 'failure in loading from storage.local';
   }
@@ -20,6 +21,7 @@ function inject(){
   // check whether traverse is necessary?
   if(hasAlreadyInjected()){return}
   traverse(det)
+  alter()
 }
 
 function hasAlreadyInjected(){
@@ -44,7 +46,7 @@ function traverse(nodes){
   for(var i=0; i<len; i++){
     d = nodes[i];
     if(d.childElementCount == 0 && d.nodeName != 'SCRIPT'){
-      addHover(d)
+      findTargetNode(d)
       console.log(d.innerText); // d.nodeType,d.nodeName
     }
     if(d.children){
@@ -53,25 +55,73 @@ function traverse(nodes){
   }
 }
 
-function addHover(node){
+function findTargetNode(node){ // targetNodes配列へpush
   let str = node.innerText
-  if(has4digit(str) && hasCode(str)){
-  // if(/[1-9]\d{3}/.test(str) && hasCode(str)){
-  // node.parentElement.insertBefore(makeHover(node), node.nextSibling)
-    node.appendChild(makeHover(node))
+  if(getCodes(str).length != 0){ // Array of codes
+    targetNodes.push(node)
   }
 }
 
-function has4digit(str){
-  return (/[1-9]\d{3}/.test(str) && str.match(/[1-9]\d{3,}/)[0].length == 4)
+function getCodes(str){
+  let ar = fourDigits(str)
+  if(ar.length == 0){ return [] }
+  return ar.filter( e => isCode(e) )
 }
 
-function hasCode(str){
-  let ticker = str.match(/[1-9]\d{3}/)[0]
-  for(const e of code){ if( ticker == e.code){ 
-    comment = e.name + "<br>" + e.categoly + "<br>" + e.feature
-    return true } }
+function fourDigits(str){
+  res = str.match(/[1-9]\d{3,}/g)
+  if(!res){ return [] }
+  return res.filter(e => e.length == 4)
+}
+
+function isCode(arg){ // arg: 4桁数字
+  for(const e of code){
+    if( arg == e.code){ return true } 
+  }
   return false
+}
+
+function alter(){
+   for(let e in targetNodes){
+     insertIntoHoverHTML(targetNodes[e])
+   }
+}
+
+function insertIntoHoverHTML(det){
+  let str = det.innerText
+  let codes = getCodes(str)
+  for(const e in codes) {
+    let comment = makeComment(codes[e]) 
+    let altStr = `<span>${codes[e]}<span>${comment}</span></span>`
+    str = str.replace(codes[e], altStr)
+  }
+  det.innerHTML = str
+  // 挿入したspan要素に属性を付与
+  let nodes = det.children
+  for(let i=0; i<nodes.length; i++){
+  // for popup btn
+    nodes[i].setAttribute('class', 'popup__btn')
+    nodes[i].setAttribute('style', `color: pink; position: relative;
+                                    z-index: ${cnt};`)
+  // making popup area
+    nodes[i].children[0].setAttribute('class', 'popup__box')
+    nodes[i].children[0].setAttribute('style', 'color: black;')
+    cnt = cnt - 1
+  }
+}
+
+function makeComment(ticker){
+  let comment = ''
+  for(const e of code){
+    if( ticker == e.code){ 
+      comment = e.name + "<br>" + e.categoly + "<br>" + e.feature
+    }
+  }
+  return comment
+}
+
+function find4Digit(matches){
+  return  matches.filter(e => e.length == 4)
 }
 
 function makeHover(det) {
@@ -90,6 +140,7 @@ function makeHover(det) {
   div.appendChild(p)
   return div
 }
+// unused
 function makeHover2(det) {
   // for popup btn
   det.setAttribute('class', 'popup__btn')
