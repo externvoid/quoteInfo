@@ -5,6 +5,8 @@ chrome.storage.local.get(['Code'], foo)
 
 function foo(e){
   code = e.Code;  // propagable function variable code
+  cnt = 9999
+  comment = null
   if (code == null){
     code = 'failure in loading from storage.local';
   }
@@ -15,7 +17,25 @@ function inject(){
   console.log("in inject")
   console.log(code[0])
   let det = document.body.childNodes
+  // check whether traverse is necessary?
+  if(hasAlreadyInjected()){return}
   traverse(det)
+}
+
+function hasAlreadyInjected(){
+  let divs = document.getElementsByTagName('div')
+  try{
+    for(e in divs){
+      if(divs[e].getAttribute('class') == 'popup__btn'){
+        console.log('Already Injected!')
+        return true
+      }
+      // else{ console.log(e, divs[e]) }
+    }
+  }catch(err){
+    // console.log(err)
+  }
+  return false
 }
 
 function traverse(nodes){
@@ -35,7 +55,6 @@ function traverse(nodes){
 
 function addHover(node){
   let str = node.innerText
-  comment = null
   if(has4digit(str) && hasCode(str)){
   // if(/[1-9]\d{3}/.test(str) && hasCode(str)){
   // node.parentElement.insertBefore(makeHover(node), node.nextSibling)
@@ -58,6 +77,22 @@ function hasCode(str){
 function makeHover(det) {
   // for popup btn
   det.setAttribute('class', 'popup__btn')
+  det.setAttribute('style', `color: pink; position: relative;
+                             z-index: ${cnt};`)
+  cnt = cnt - 1
+  // making popup area
+  let div = document.createElement('div')
+  div.setAttribute('class', 'popup__box')
+  div.setAttribute('style', 'color: black;')
+
+  let p = document.createElement('p')
+  p.innerHTML = comment
+  div.appendChild(p)
+  return div
+}
+function makeHover2(det) {
+  // for popup btn
+  det.setAttribute('class', 'popup__btn')
   det.setAttribute('style', 'color: pink; position: relative; z-index: 1;')
   // making popup area
   let div = document.createElement('div')
@@ -69,6 +104,7 @@ function makeHover(det) {
   div.appendChild(p)
   return div
 }
+// unused
 function getUniqueStr(myStrong){
   var strong = 1000;
   if (myStrong) strong = myStrong;
