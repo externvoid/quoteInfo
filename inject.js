@@ -1,12 +1,10 @@
 // 2021年 4月25日 日曜日 00時08分14秒 JST
-console.log("in the inject.js")
+// 2021年 4月29日 木曜日 10時27分42秒 JST
+chrome.storage.local.get(['Code'], injectElem)
 
-chrome.storage.local.get(['Code'], foo)
-
-function foo(e){
+function injectElem(e){
   code = e.Code;  // propagable function variable code
   cnt = 9999
-  // comment = null
   targetNodes = []
   if (code == null){
     code = 'failure in loading from storage.local';
@@ -17,22 +15,23 @@ function foo(e){
 function inject(){
   console.log("in inject")
   console.log(code[0])
-  let det = document.body.childNodes
   // check whether traverse is necessary?
   if(hasAlreadyInjected()){return}
+  let det = document.body.childNodes
+
   traverse(det)
   alter()
 }
 
 function hasAlreadyInjected(){
-  let divs = document.getElementsByTagName('div')
+  let elms = document.getElementsByTagName('span')
   try{
-    for(e in divs){
-      if(divs[e].getAttribute('class') == 'popup__btn'){
+    for(e in elms){
+      if(elms[e].getAttribute('class') == 'popup__btn'){
         console.log('Already Injected!')
         return true
       }
-      // else{ console.log(e, divs[e]) }
+      // else{ console.log(e, elms[e]) }
     }
   }catch(err){
     // console.log(err)
@@ -96,20 +95,23 @@ function insertIntoHoverHTML(det){
     str = str.replace(codes[e], altStr)
   }
   det.innerHTML = str
+  addAttr(det)
+}
+
+function addAttr(det){
   // 挿入したspan要素に属性を付与
   let nodes = det.children
   for(let i=0; i<nodes.length; i++){
   // for popup btn
     nodes[i].setAttribute('class', 'popup__btn')
-    nodes[i].setAttribute('style', `color: pink; position: relative;
-                                    z-index: ${cnt};`)
+    nodes[i].setAttribute('style',
+      `color: pink; position: relative; z-index: ${cnt};`)
   // making popup area
     nodes[i].children[0].setAttribute('class', 'popup__box')
     nodes[i].children[0].setAttribute('style', 'color: black;')
     cnt = cnt - 1
   }
 }
-
 function makeComment(ticker){
   let comment = ''
   for(const e of code){
@@ -120,45 +122,3 @@ function makeComment(ticker){
   return comment
 }
 
-function find4Digit(matches){
-  return  matches.filter(e => e.length == 4)
-}
-
-function makeHover(det) {
-  // for popup btn
-  det.setAttribute('class', 'popup__btn')
-  det.setAttribute('style', `color: pink; position: relative;
-                             z-index: ${cnt};`)
-  cnt = cnt - 1
-  // making popup area
-  let div = document.createElement('div')
-  div.setAttribute('class', 'popup__box')
-  div.setAttribute('style', 'color: black;')
-
-  let p = document.createElement('p')
-  p.innerHTML = comment
-  div.appendChild(p)
-  return div
-}
-// unused
-function makeHover2(det) {
-  // for popup btn
-  det.setAttribute('class', 'popup__btn')
-  det.setAttribute('style', 'color: pink; position: relative; z-index: 1;')
-  // making popup area
-  let div = document.createElement('div')
-  div.setAttribute('class', 'popup__box')
-  div.setAttribute('style', 'color: black;')
-
-  let p = document.createElement('p')
-  p.innerHTML = comment
-  div.appendChild(p)
-  return div
-}
-// unused
-function getUniqueStr(myStrong){
-  var strong = 1000;
-  if (myStrong) strong = myStrong;
-  return new Date().getTime().toString(16)  + Math.floor(strong*Math.random()).toString(16)
-}
-// [JavaScriptでユニークな文字列をさくっと生成する - Qiita](https://qiita.com/coa00/items/679b0b5c7c468698d53f)

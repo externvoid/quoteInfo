@@ -34,18 +34,18 @@ document.getElementById('id_execScript').onclick = () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.scripting.executeScript({
       target: {tabId: tabs[0].id},
-      // function: foo
+      // function: injectElem
       files: ['inject.js']
     });
     chrome.scripting.insertCSS({
       target: {tabId: tabs[0].id},
-      // function: foo
+      // function: injectElem
       files: ['inject.css']
     });
   });
 }
-
-function foo(){
+// unused
+function injectElem(){
   chrome.storage.local.get(['Code'], function(e){ 
     let code = e.Code 
     if (code == null){
