@@ -44,7 +44,8 @@ function traverse(nodes){
   var d = null;
   for(var i=0; i<len; i++){
     d = nodes[i];
-    if(d.childElementCount == 0 && d.nodeName != 'SCRIPT'){
+    if( isBadNode(d) ) { continue }
+    if(d.childElementCount == 0 && d.nodeName != 'script'){
       findTargetNode(d)
       console.log(d.innerText); // d.nodeType,d.nodeName
     }
@@ -53,9 +54,15 @@ function traverse(nodes){
     }
   }
 }
+function isBadNode(d){
+  const badLists = ["SCRIPT", "NOSCRIPT", "IFRAME", "SVG"]
+  if( badLists.includes( d.nodeName ) ) { console.log( "isBadNode", d.nodeName ) }
+  return badLists.includes( d.nodeName )
+}
 
 function findTargetNode(node){ // targetNodes配列へpush
   let str = node.innerText
+  if(str == undefined){ return } // Why?
   if(getCodes(str).length != 0){ // Array of codes
     targetNodes.push(node)
   }
@@ -68,7 +75,7 @@ function getCodes(str){
 }
 
 function fourDigits(str){
-  res = str.match(/[1-9]\d{3,}/g)
+  let res = str.match(/[1-9]\d{3,}/g)
   if(!res){ return [] }
   return res.filter(e => e.length == 4)
 }
@@ -91,7 +98,7 @@ function insertIntoHoverHTML(det){
   let codes = getCodes(str)
   for(const e in codes) {
     let comment = makeComment(codes[e]) 
-    let altStr = `<span>${codes[e]}<span>${comment}</span></span>`
+    let altStr = `<span>${codes[e]}<div>${comment}</div></span>`
     str = str.replace(codes[e], altStr)
   }
   det.innerHTML = str
@@ -116,7 +123,8 @@ function makeComment(ticker){
   let comment = ''
   for(const e of code){
     if( ticker == e.code){ 
-      comment = e.name + "<br>" + e.categoly + "<br>" + e.feature
+      comment = e.name + "<br>" +'(' + e.code + ')' + "<br>" +
+                e.categoly + "<br>" + e.feature
     }
   }
   return comment

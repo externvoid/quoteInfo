@@ -12,13 +12,16 @@ display: block;
   /* z-index: 9999; */
   border-radius: 30px;
   /* position: relative; */
-  top:0;
-  left:0;
-  width: 200px;
+  top:50;
+  left:50;
+  width: 245px;
+  /* height: 545px; */
+  overflow-wrap: break-word;
   padding: 15px;
   font-size: 13px;
   /* background-color: lightblue; */
-  background-color: #00bcd4bd;
+  /* background-color: #00bcd4bd; */
+  background-color: #59aae2fc;
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
