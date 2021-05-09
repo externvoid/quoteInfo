@@ -122,8 +122,11 @@ function insertEventListenerIntoSpan(det){
 function foo(e){
   let d = body.children.popup__box2
   d.style.visibility="visible"
-  d.style.left = e.target.offsetLeft + "px"
-  d.style.top = e.target.offsetTop + "px"
+  let domRect = e.target.getBoundingClientRect()
+  d.style.left = domRect.x + "px"
+  d.style.top = domRect.y+ "px"
+  // d.style.left = e.target.offsetLeft + "px"
+  // d.style.top = e.target.offsetTop + "px"
   d.innerHTML = e.target.dataset["foo"]
 }
 
@@ -132,11 +135,6 @@ function bar(e){
   d.style.visibility="hidden"
 }
 
-function addEvtListener2(det){
-  // 挿入したspan要素に属性を付与
-  det.onmouseover = foo
-  det.onmouseout= bar
-}
 function addEvtListener(det){
   // 挿入したspan要素に属性を付与
   let nodes = det.children
