@@ -4,6 +4,7 @@ chrome.storage.local.get(['Code'], injectElem)
 
 function injectElem(e){
   code = e.Code;  // propagable function variable code
+  body =  document.body
   cnt = 9999
   targetNodes = []
   if (code == null){
@@ -21,6 +22,17 @@ function inject(){
 
   traverse(det)
   alter()
+  makePopup()
+}
+function makePopup(){
+  // making popup area
+  let popup = document.createElement('div')
+  popup.setAttribute('id', 'popup__box2')
+  popup.style.color = "black"
+  popup.style.left = "10px"
+  popup.style.top = "0px"
+
+  body.appendChild(popup)
 }
 
 function hasAlreadyInjected(){
@@ -88,23 +100,53 @@ function isCode(arg){ // arg: 4桁数字
 }
 
 function alter(){
-   for(let e in targetNodes){
-     insertIntoHoverHTML(targetNodes[e])
-   }
+  for(let e in targetNodes){
+    insertEventListenerIntoSpan(targetNodes[e])
+  }
 }
 
-function insertIntoHoverHTML(det){
+function insertEventListenerIntoSpan(det){
   let str = det.innerText
   let codes = getCodes(str)
   for(const e in codes) {
     let comment = makeComment(codes[e]) 
-    let altStr = `<span>${codes[e]}<div>${comment}</div></span>`
+    let altStr = 
+    `<span class='popup__btn' style='color: pink;' data-foo="${comment}">${codes[e]}</span>`
     str = str.replace(codes[e], altStr)
   }
   det.innerHTML = str
-  addAttr(det)
+  addEvtListener(det)
+//  addAttr(det)
 }
 
+function foo(e){
+  let d = body.children.popup__box2
+  d.style.visibility="visible"
+  d.style.left = e.target.offsetLeft + "px"
+  d.style.top = e.target.offsetTop + "px"
+  d.innerHTML = e.target.dataset["foo"]
+}
+
+function bar(e){
+  let d = body.children.popup__box2
+  d.style.visibility="hidden"
+}
+
+function addEvtListener2(det){
+  // 挿入したspan要素に属性を付与
+  det.onmouseover = foo
+  det.onmouseout= bar
+}
+function addEvtListener(det){
+  // 挿入したspan要素に属性を付与
+  let nodes = det.children
+  for(let i=0; i<nodes.length; i++){
+  // for popup btn
+    nodes[i].onmouseover = foo
+    nodes[i].onmouseout= bar
+  }
+}
+// del OK!
 function addAttr(det){
   // 挿入したspan要素に属性を付与
   let nodes = det.children

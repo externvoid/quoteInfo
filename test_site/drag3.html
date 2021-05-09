@@ -1,0 +1,84 @@
+<!doctype html>
+<!-- [html &#45; Draggable div without jQuery UI &#45; Stack Overflow](https://stackoverflow.com/questions/8569095/draggable&#45;div&#45;without&#45;jquery&#45;ui) -->
+<!-- drag.htmlのリファクタリングしたモノ -->
+<html>
+  <head>
+    <style>
+      /* #container { */
+      /* position:absolute; */
+      /* background-color: blue; */
+      /* } */
+      #elem{
+      border-radius: 30px;  
+      position: absolute;
+      background-color: skyblue;
+      opaque: 0.8;
+      }
+    </style>
+    <script>
+      var mydragg = function(){
+        let pop = {top: 0, left: 0, width: 0, height: 0}
+        let win  = {width: null, height: null}
+        let inner  = {width: null, height: null}
+        var id = null;
+        return {
+          startMoving : function(divid,evt){
+            id = divid
+            const domRect = id.getBoundingClientRect()
+            evt = evt || window.event;
+            pop.left = domRect.x; pop.top = domRect.y; 
+            pop.width = domRect.width; pop.height = domRect.height
+            win.width =  window.innerWidth; win.height =  window.innerHeight + 8*2
+
+            console.log(pop.left, pop.top, evt.clientX, evt.clientY)//drag開始時drag中ではない。
+
+            document.getElementsByTagName('body')[0].style.cursor='move'
+            inner.width = evt.clientX - pop.left;
+            inner.height = evt.clientY - pop.top;
+            // mouse cursorがelemの内側に落下した時、どれだけ内側？
+
+            document.onmousemove = function(evt){
+              evt = evt || window.event;
+              // pop.x = evt.clientX - evt.offsetX; pop.y = evt.clientY - evt.offsetY
+              pop.x = evt.clientX - inner.width; pop.y = evt.clientY - inner.height
+              // Window領域を超えてpopupが移動するのを防止
+              mydragg.adjust()
+              mydragg.move();
+            }
+          },
+          stopMoving : function(){
+            document.getElementsByTagName('body')[0].style.cursor='default'
+            document.onmousemove = function(){}
+          },
+
+          move : function(){
+            id.style.left = pop.x + 'px'
+            id.style.top = pop.y + 'px'
+          },
+
+          adjust: function(){
+            if (pop.x < 0) pop.x = 0;
+            if (pop.y < 0) pop.y = 0;
+
+            if (pop.x + pop.width > win.width){ pop.x = win.width - pop.width }
+            if (pop.y + pop.height > win.height){ pop.y = win.height - pop.height }
+          },
+        }
+      }();
+      
+    </script>
+  </head>
+  <body>
+    <div id="foo" style="border: 1px solid;">foo</div>
+    <div id="bar" style="border: 1px solid;height: 300px;">bar</div>
+    <div id="elem" onmousedown='mydragg.startMoving(this,event);' onmouseup='mydragg.stopMoving();' style="width: 200px;height: 100px;">
+      <div style='width:100%;height:100%;padding:10px'>
+        <select id=test>
+          <option value=1>first
+          <option value=2>second
+        </select>
+        <INPUT TYPE=text value="123">
+      </div>
+    </div>
+  </body>
+</html>

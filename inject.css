@@ -25,3 +25,27 @@ display: block;
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
+
+/* 上部は要らない  */
+#popup__box2{
+  display: block;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 9999;
+  border-radius: 30px;
+  /* position: relative; */
+  top:50;
+  left:50;
+  width: 245px;
+  /* height: 545px; */
+  overflow-wrap: break-word;
+  padding: 15px;
+  font-size: 13px;
+  /* background-color: lightblue; */
+  background-color: #00bcd4bd;
+  /* background-color: #2fa09fde; /* 黒緑透明 */ */
+  /* background-color: #59aae2fc; */ /* くすんだ青不透明 */
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}

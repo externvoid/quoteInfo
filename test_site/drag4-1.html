@@ -1,0 +1,62 @@
+<!-- https://www.w3schools.com/code/tryit.asp?filename=GQ6FAQLT084B -->
+<!-- h1のマウスオーバーによりpopup が表示される。 -->
+<!DOCTYPE html>
+<html>
+<style>
+#mydiv {
+  position: fixed;;
+  /* position: absolute; */
+  z-index: 9;
+  background-color: #f1f1f1;
+  text-align: center;
+  border: 1px solid #d3d3d3;
+  pointer-events: none;
+}
+
+#mydivheader {
+  padding: 10px;
+  cursor: move;
+  z-index: 10;
+  background-color: #2196F3;
+  color: #fff;
+}
+</style>
+<body>
+
+<span data-foo='FOO'>Draggable DIV Element</span>
+
+<p>Click and hold the mouse button down while moving the DIV element</p>
+
+<div id="mydiv">
+  <div id="mydivheader">Click here to move</div>
+  <p>Move</p>
+  <p>this</p>
+  <p>DIV</p>
+</div>
+
+<script>
+// register mouseenter event handler
+var popup = document.getElementById('mydiv')
+popup.style.visibility = 'hidden'
+document.getElementsByTagName('span')[0].onmouseenter = foo
+document.getElementsByTagName('span')[0].onmouseleave = bar
+
+function foo(e){
+  console.log('h1 over')  
+  const popup = globalThis.popup
+  if( popup.style.visibility == 'visible' ) return
+  // 座標設定 
+  popup.style.left = e.target.offsetLeft + 15 + "px" 
+  popup.style.top = e.target.offsetTop + "px" 
+  // popup.style.top = e.target.offsetTop + e.target.clientHeight + "px" 
+  popup.style.visibility = 'visible'
+  popup.children[1].innerText = "OK"
+}  
+
+function bar(e){
+  console.log('h1 out')  
+  globalThis.popup.style.visibility = 'hidden'
+}  
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<!-- drag.htmlをリファクタリングしたもの -->
+<!-- [html &#45; Draggable div without jQuery UI &#45; Stack Overflow](https://stackoverflow.com/questions/8569095/draggable&#45;div&#45;without&#45;jquery&#45;ui) -->
+<html>
+  <head>
+    <style>
+      /* #container { */
+      /* position:absolute; */
+      /* background-color: blue; */
+      /* } */
+      #elem{
+      border-radius: 30px;  
+      position: absolute;
+      background-color: skyblue;
+      opaque: 0.8;
+      }
+    </style>
+    <script>
+      var mydragg = function(){
+        let mpos = {x: null, y: null} // 落下地点
+        let dpos = {x: null, y: null} // divを配置する座標
+        let div0 = {top: 0, left: 0, width: 0, height: 0}
+        let win  = {width: null, height: null}
+        let inner  = {width: null, height: null}
+        var id = null;
+        return {
+          move : function(){
+            id.style.left = dpos.x + 'px'
+            id.style.top = dpos.y + 'px'
+          },
+
+          startMoving : function(divid,evt){
+            id = divid
+            const domRect = id.getBoundingClientRect()
+            evt = evt || window.event;
+            mpos.x = evt.clientX; mpos.y = evt.clientY
+            div0.left = domRect.x; div0.top = domRect.y; 
+            div0.width = domRect.width; div0.height = domRect.height
+            win.width =  window.innerWidth; win.height =  window.innerHeight + 8*2
+
+            console.log(div0.left, div0.top, mpos.x, mpos.y)//drag開始時drag中ではない。
+
+            document.getElementsByTagName('body')[0].style.cursor='move'
+            inner.width = mpos.x - div0.left;
+            inner.height = mpos.y - div0.top;
+            // mouse cursorがelemの内側に落下した時、どれだけ内側？
+
+            document.onmousemove = function(evt){
+              evt = evt || window.event;
+              mpos.x = evt.clientX; mpos.y = evt.clientY
+              dpos.x = mpos.x - inner.width; dpos.y = mpos.y - inner.height
+              // マウスカーソルを見失うのを防止
+              if (dpos.x < 0) dpos.x = 0;
+              if (dpos.y < 0) dpos.y = 0;
+
+              if (dpos.x + div0.width > win.width){ dpos.x = win.width - div0.width }
+              if (dpos.y + div0.height > win.height){ dpos.y = win.height - div0.height }
+              mydragg.move();
+            }
+          },
+          stopMoving : function(){
+            document.getElementsByTagName('body')[0].style.cursor='default'
+            document.onmousemove = function(){}
+          },
+        }
+      }();
+      
+    </script>
+  </head>
+  <body>
+    <div id="foo" style="border: 1px solid;">foo</div>
+    <div id="bar" style="border: 1px solid;height: 300px;">bar</div>
+    <div id="elem" onmousedown='mydragg.startMoving(this,event);' onmouseup='mydragg.stopMoving();' style="width: 200px;height: 100px;">
+      <div style='width:100%;height:100%;padding:10px'>
+        <select id=test>
+          <option value=1>first
+          <option value=2>second
+        </select>
+        <INPUT TYPE=text value="123">
+      </div>
+    </div>
+  </body>
+</html>
