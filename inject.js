@@ -57,6 +57,23 @@ function traverse(nodes){
   for(var i=0; i<len; i++){
     d = nodes[i];
     if( isBadNode(d) ) { continue }
+    if(d.childElementCount == 0 || d.childElementCount == undefined){
+      findTargetNode(d)
+      console.log(d.textContent); // d.nodeType,d.nodeName
+      console.log(d.nodeName); // d.nodeType,d.nodeName
+    }
+    if(d.childNodes){
+       traverse(d.childNodes);
+    }
+  }
+}
+// old version != 'script'これは不要だ！
+function traverse2(nodes){
+  var len = nodes.length;
+  var d = null;
+  for(var i=0; i<len; i++){
+    d = nodes[i];
+    if( isBadNode(d) ) { continue }
     if(d.childElementCount == 0 && d.nodeName != 'script'){
       findTargetNode(d)
       console.log(d.innerText); // d.nodeType,d.nodeName
@@ -66,6 +83,7 @@ function traverse(nodes){
     }
   }
 }
+
 function isBadNode(d){
   const badLists = ["SCRIPT", "NOSCRIPT", "IFRAME", "SVG"]
   if( badLists.includes( d.nodeName ) ) { console.log( "isBadNode", d.nodeName ) }
@@ -73,7 +91,8 @@ function isBadNode(d){
 }
 
 function findTargetNode(node){ // targetNodes配列へpush
-  let str = node.innerText
+  // let str = node.innerText
+  let str = node.textContent
   if(str == undefined){ return } // Why?
   if(getCodes(str).length != 0){ // Array of codes
     targetNodes.push(node)
@@ -101,12 +120,14 @@ function isCode(arg){ // arg: 4桁数字
 
 function alter(){
   for(let e in targetNodes){
+    // ToDo: insertEventListenerIntoTEXT(targetNodes[e])
     insertEventListenerIntoSpan(targetNodes[e])
   }
 }
 
 function insertEventListenerIntoSpan(det){
-  let str = det.innerText
+  let str = det.textContent
+  // let str = det.innerText
   let codes = getCodes(str)
   for(const e in codes) {
     let comment = makeComment(codes[e]) 
@@ -123,8 +144,8 @@ function foo(e){
   let d = body.children.popup__box2
   d.style.visibility="visible"
   let domRect = e.target.getBoundingClientRect()
-  d.style.left = domRect.x + "px"
-  d.style.top = domRect.y+ "px"
+  d.style.left = domRect.x + 15 + "px"
+  d.style.top  = domRect.y + 15 + "px"
   // d.style.left = e.target.offsetLeft + "px"
   // d.style.top = e.target.offsetTop + "px"
   d.innerHTML = e.target.dataset["foo"]
