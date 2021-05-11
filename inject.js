@@ -95,6 +95,7 @@ function findTargetNode(node){ // targetNodes配列へpush
   let str = node.textContent
   if(str == undefined){ return } // Why?
   if(getCodes(str).length != 0){ // Array of codes
+    // ここでnode.parentNode == nullテスト？
     targetNodes.push(node)
   }
 }
@@ -119,16 +120,37 @@ function isCode(arg){ // arg: 4桁数字
 }
 
 function alter(){
-  for(let e in targetNodes){
-    // ToDo: insertEventListenerIntoTEXT(targetNodes[e])
-    insertEventListenerIntoSpan(targetNodes[e])
+  for(let e of targetNodes){
+    if(e.nodeType == Node.ELEMENT_NODE){
+      insertEventListenerIntoSpan(e)
+    }else if(e.nodeType == Node.TEXT_NODE){
+      insertEventListenerIntoTEXT(e)
+    }else{
+      return
+    }
   }
+}
+
+function insertEventListenerIntoTEXT(det){
+  if(det.parentNode == null) {return} // Why?
+  let str = det.textContent
+  const codes = getCodes(str)
+  const comment = makeComment(codes[0])  // 危険codesのlength=1と仮定
+  let altStr = 
+  `<span class='popup__btn' style='color: pink;' data-foo="${comment}">${codes[0]}</span>`
+  str = str.replace(codes[0], altStr)
+
+  const sib = document.createElement('span')
+  sib.innerHTML = str
+  // addEvtListener(sib.parentNode) // 引数はparentNode
+  sib.onmouseover = foo; sib.onmouseout = bar
+  det.parentNode.replaceChild(sib, det)
 }
 
 function insertEventListenerIntoSpan(det){
   let str = det.textContent
   // let str = det.innerText
-  let codes = getCodes(str)
+  const codes = getCodes(str)
   for(const e in codes) {
     let comment = makeComment(codes[e]) 
     let altStr = 
