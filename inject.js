@@ -143,7 +143,9 @@ function insertEventListenerIntoTEXT(det){
   const sib = document.createElement('span')
   sib.innerHTML = str
   // addEvtListener(sib.parentNode) // 引数はparentNode
-  sib.onmouseover = foo; sib.onmouseout = bar
+  sib.firstElementChild.onmouseover = foo
+  sib.firstElementChild.onmouseout = bar
+  // replaceChildよりappend(NodesOrDom)?
   det.parentNode.replaceChild(sib, det)
 }
 
