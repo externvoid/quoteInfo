@@ -4,12 +4,13 @@ console.log('in the background.js')
 // 初回install時、storage.localは消える<=削除、...
 // 再読込されました。 reason = 'update'
 
-// chrome.action.onInstalled.addListener(r => foo)
+// chrome.runtime.onInstalled.addListener(r => foo)
 // ファイルorURLよりjson読込、storage.localへ
 // default_popupとコンフリクト
-// chrome.runtime.onClicked.addListener(tab =>bar)
+// chrome.action.onClicked.addListener(tab =>bar)
 // スクリプト起動
-chrome.runtime.onInstalled.addListener(reason => {
+chrome.runtime.onInstalled.addListener(foo)
+function foo(reason){
   console.log('onInstalled reason =', reason.reason)
   let code
   fetch('https://www.eonet.ne.jp/~stocks/code.json') // (1) リクエスト送信
@@ -34,8 +35,24 @@ chrome.runtime.onInstalled.addListener(reason => {
 
 
 
-  if (reason.reason == chrome.runtime.OnInstalledReason.INSTALL) {
+  if (reason.reason == chrome.runtime.OnInstalledReason.INSTALL ||
+      reason.reason == chrome.runtime.OnInstalledReason.UPDATE) {
     console.log('onInstalled')
     chrome.storage.local.get(['Code'], (e) => console.log(e?.Code[0]))
   }
-});
+}
+// 
+// web pageへscript injection
+chrome.action.onClicked.addListener(bar)
+function bar(tab){
+  console.warn('sw onClicked=', tab)
+  chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    files: ['inject.js']
+  })
+  chrome.scripting.insertCSS({
+    target: {tabId: tab.id},
+    files: ['inject.css']
+  })
+
+}
