@@ -10,10 +10,11 @@ console.log('in the background.js')
 // chrome.action.onClicked.addListener(tab =>bar)
 // スクリプト起動
 chrome.runtime.onInstalled.addListener(foo)
-function foo(reason){
+async function foo(reason){
   console.log('onInstalled reason =', reason.reason)
   let code
-  fetch('https://www.eonet.ne.jp/~stocks/code.json') // (1) リクエスト送信
+  let isFailed = false
+  await fetch('https://www.eonet.ne.jp/~stocks/code.json')// (1) リクエスト送信
   // fetch('asset/code.json') // (1) リクエスト送信
     .then(response => response.text()) // (2) レスポンスデータを取得
     .then(data => { // (3)レスポンスデータを処理
@@ -28,13 +29,33 @@ function foo(reason){
       )
     })
     .catch((reason) => {
+      isFailed = true
       console.log('fetch failure, code.json retrieving')
     });
-  // chrome.storage.local.get(['Code'], (e) => console.log(e.Code[0]))
-  // 同期実行したいのだけど？local.setを同期実行したい。方法は？
+  // fetch失敗時にload file
+  if(isFailed == true){
+  await fetch('asset/code.json') // (1) リクエスト送信
+    .then(response => response.text()) // (2) レスポンスデータを取得
+    .then(data => { // (3)レスポンスデータを処理
+      console.log('from local file')
+      code = JSON.parse(data);
+      console.log(code[0]?.name ?? 'code is undefined')
+    })
+    .then((res) => {
+      chrome.storage.local.set({ 'Code': code }, 
+        function(){ console.log('saved to storage.local') 
+        }
+      )
+    })
+    .catch((reason) => {
+      isFailed = true
+      console.log('load failure, code.json retrieving')
+    });
+  }
 
+  isFailed = false
 
-
+// local storageを確認
   if (reason.reason == chrome.runtime.OnInstalledReason.INSTALL ||
       reason.reason == chrome.runtime.OnInstalledReason.UPDATE) {
     console.log('onInstalled')
