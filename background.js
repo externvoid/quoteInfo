@@ -70,7 +70,15 @@ function bar(tab){
   chrome.scripting.executeScript({
     target: {tabId: tab.id},
     files: ['inject.js']
-  })
+    })
+    // })
+    // (res) => { 
+    //   console.log('res.result=', res[0].result)
+    //   console.log('res', res)
+    // }
+  chrome.action.setBadgeBackgroundColor({color: [0, 0, 255, 125]})
+  chrome.action.setBadgeText({text: "999"})
+
   chrome.scripting.insertCSS({
     target: {tabId: tab.id},
     files: ['inject.css']

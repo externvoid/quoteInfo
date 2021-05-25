@@ -18,11 +18,11 @@ function inject(){
   console.log(code[0])
   // check whether traverse is necessary?
   if(hasAlreadyInjected()){return}
-  let det = document.body.childNodes
 
-  traverse(det)
-  alter()
-  makePopup()
+  traverse(body)
+  alter() // append span elem.
+  makePopup() // see directly below
+  console.log('targetNodes.length =', targetNodes.length)
 }
 function makePopup(){
   // making popup area
@@ -50,42 +50,22 @@ function hasAlreadyInjected(){
   }
   return false
 }
-
-function traverse(nodes){
-  var len = nodes.length;
-  var d = null;
-  for(var i=0; i<len; i++){
-    d = nodes[i];
+//
+function traverse(dom){
+  for(let d of dom.childNodes){
     if( isBadNode(d) ) { continue }
-    if(d.childElementCount == 0 || d.childElementCount == undefined){
+    if(d.childNodes.length == 0){
+      // console.info(d.nodeName)	
+      // console.info(d.textContent)	
       findTargetNode(d)
-      console.log(d.textContent); // d.nodeType,d.nodeName
-      console.log(d.nodeName); // d.nodeType,d.nodeName
+      continue    
     }
-    if(d.childNodes){
-       traverse(d.childNodes);
-    }
-  }
-}
-// old version != 'script'これは不要だ！
-function traverse2(nodes){
-  var len = nodes.length;
-  var d = null;
-  for(var i=0; i<len; i++){
-    d = nodes[i];
-    if( isBadNode(d) ) { continue }
-    if(d.childElementCount == 0 && d.nodeName != 'script'){
-      findTargetNode(d)
-      console.log(d.innerText); // d.nodeType,d.nodeName
-    }
-    if(d.children){
-       traverse(d.children);
-    }
+    traverse(d)
   }
 }
 
 function isBadNode(d){
-  const badLists = ["SCRIPT", "NOSCRIPT", "IFRAME", "SVG"]
+  const badLists = ["SCRIPT", "NOSCRIPT", "IFRAME", "SVG", "BR"]
   if( badLists.includes( d.nodeName ) ) { console.log( "isBadNode", d.nodeName ) }
   return badLists.includes( d.nodeName )
 }
@@ -135,20 +115,19 @@ function insertEventListenerIntoTEXT(det){
   if(det.parentNode == null) {return} // Why?
   let str = det.textContent
   const codes = getCodes(str)
-  const comment = makeComment(codes[0])  // 危険codesのlength=1と仮定
-  let altStr = 
-  `<span class='popup__btn' style='color: pink;' data-foo="${comment}">${codes[0]}</span>`
-  str = str.replace(codes[0], altStr)
+  for(const e in codes) {
+    let comment = makeComment(codes[e]) 
+    let altStr = 
+    `<span class='popup__btn' style='color: pink;' data-foo="${comment}">${codes[e]}</span>`
+    str = str.replace(codes[e], altStr)
+  }
 
-  const sib = document.createElement('span')
+  const sib = document.createElement('span') // newChild
   sib.innerHTML = str
-  // addEvtListener(sib.parentNode) // 引数はparentNode
-  sib.firstElementChild.onmouseover = foo
-  sib.firstElementChild.onmouseout = bar
-  // replaceChildよりappend(NodesOrDom)?
   det.parentNode.replaceChild(sib, det)
+  addEvtListener(sib) // whether det or sib?
 }
-
+// del_OK
 function insertEventListenerIntoSpan(det){
   let str = det.textContent
   // let str = det.innerText
